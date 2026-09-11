@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>😄 Joke Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.8);
+            font-size: 1rem;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .joke-text {
+            font-size: 1.4rem;
+            color: #333;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .loading {
+            color: #999;
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.7);
+        }
+
+        .btn:active {
+            transform: translateY(0px);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .footer {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+            margin-top: 30px;
+        }
+
+        .footer a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: white;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="badge">⚡ Powered by AWS Lambda</div>
+            <h1>😄 Joke Generator</h1>
+            <p>A serverless joke API built on AWS — click the button for a laugh!</p>
+        </div>
+
+        <div class="card">
+            <p class="joke-text" id="joke-text">
+                Click the button below to get your first joke! 👇
+            </p>
+        </div>
+
+        <button class="btn" id="joke-btn" onclick="getJoke()">
+            😂 Get a Joke
+        </button>
+
+        <div class="footer">
+            <p>Built with AWS Lambda + API Gateway</p>
+            <p>Part of the <strong>AWS Weekend Deployment Challenge</strong></p>
+            <br>
+            <a href="https://github.com/RohitDeore/joke-generator-api" target="_blank">
+                📂 View Source on GitHub
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://q7j0iummq6.execute-api.us-east-1.amazonaws.com/joke';
+
+        async function getJoke() {
+            const jokeText = document.getElementById('joke-text');
+            const btn = document.getElementById('joke-btn');
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Loading...';
+            jokeText.className = 'loading';
+            jokeText.textContent = 'Fetching a joke from AWS...';
+
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                jokeText.className = 'joke-text';
+                jokeText.textContent = data.joke;
+            } catch (error) {
+                jokeText.className = 'joke-text';
+                jokeText.textContent = 'Oops! Could not fetch a joke. Please try again.';
+            }
+
+            btn.disabled = false;
+            btn.textContent = '😂 Get Another Joke';
+        }
+
+        // Auto load a joke on page open
+        window.onload = getJoke;
+    </script>
+</body>
+</html>
